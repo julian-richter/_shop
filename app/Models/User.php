@@ -49,4 +49,25 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+
+    // User can have many roles
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    // check if user has a role by name
+    public function hasRole($roleName) {
+        return $this->roles().contains('name', $roleName);
+    }
+
+    // Check if user has a permission bt name Through roles
+    public function hasPermission($permissionName) {
+        foreach ($this->roles() as $role) {
+            if ($role->permissions()->where('name', $permissionName)->exists()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
